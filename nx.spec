@@ -31,6 +31,7 @@ Patch4:		nx-X11-2.0-x86_64.patch
 License: 	MIT/GPL
 Group: 		Networking/Remote access
 Url: 		http://www.nomachine.com/sources.php
+BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires:	X11-devel
 BuildRequires:	zlib-devel
 BuildRequires:	libpng-devel
