@@ -1,20 +1,20 @@
 # most of the descriptions are stolen from the debian package
 
 %define name nx
-%define version 2.1.0
+%define version 3.1.0
 %define release %mkrel 1
 
 Summary: 	NoMachine NX
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0: 	nx-X11-%{version}-2.tar.bz2
-Source1:	nxagent-%{version}-17.tar.bz2
+Source0: 	nx-X11-%{version}-1.tar.bz2
+Source1:	nxagent-%{version}-6.tar.bz2
 Source2:	nxauth-%{version}-1.tar.bz2
-Source4:	nxcompext-%{version}-4.tar.bz2
-Source5:	nxdesktop-%{version}-8.tar.bz2
-Source6:	nxviewer-%{version}-11.tar.bz2
-Source7:	nxcomp-%{version}-6.tar.bz2
+Source4:	nxcompext-%{version}-2.tar.bz2
+Source5:	nxcompshad-%{version}-2.tar.bz2
+Source6:	nxwin-%{version}-1.tar.bz2
+Source7:	nxcomp-%{version}-4.tar.bz2
 Source8:	nxproxy-%{version}-2.tar.bz2
 Source9:	nxssh-%{version}-1.tar.bz2
 
@@ -37,7 +37,6 @@ BuildRequires:	zlib-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libjpeg-devel
 BuildRequires:	automake1.7, automake1.4
-BuildRequires:  xorg-x11
 BuildRequires:  openssl-devel
 BuildRequires:	imake
 
@@ -50,15 +49,16 @@ suppression scheme. It can operate remote X11 sessions over
 #   xcompext lib   #
 ####################
 %define lib_name_orig_xcompext libxcompext
-%define lib_major_xcompext 2
+%define lib_major_xcompext 3
 %define lib_name_xcompext %mklibname xcompext %{lib_major_xcompext}
 %package -n     %{lib_name_xcompext}
-Summary:	Xcompext library for NX
+Summary:	Xcompext/Xcompshad library for NX
 Group:		System/Libraries
 Provides:	xcompext = %{version}-%{release}
+Provides:	xcompshad = %{version}-%{release}
 
 %description -n %{lib_name_xcompext}
-Xcompext library needed by the NX framework
+Xcompext and Xcompshad library needed by the NX framework
 
 %post -n %{lib_name_xcompext} -p /sbin/ldconfig
 %postun -n %{lib_name_xcompext}
@@ -87,7 +87,7 @@ NX-X11 lib for the NX framework
 # nxcomp #
 ##########
 %define lib_name_orig_nxcomp libxcomp
-%define lib_major_nxcomp 2
+%define lib_major_nxcomp 3
 %define lib_name_nxcomp %mklibname xcomp %{lib_major_nxcomp}
 
 %package -n	%{lib_name_nxcomp}
@@ -164,9 +164,9 @@ Nx ssh client
 
 %prep
 %setup -q -c -a 1 -a 2 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
-%patch0
-%patch3
-%patch4
+#%patch0
+#%patch3
+#%patch4
 
 %build
 # documentation explainig how NX works
@@ -206,32 +206,6 @@ pushd nx-X11
 make World
 popd
 
-#-------- build nxdesktop
-pushd nxdesktop
-./configure --prefix=%{_prefix} --exec-prefix=%{_prefix} 
-perl -pi -e "s|/usr/NX|%{_prefix}|" Makefile
-perl -pi -e "s|-lX11|-lX11-nx|" Makefile
-#perl -pi -e "s|-lXext|-lXext -L/usr/X11R6/%{_lib}|" Makefile
-%make
-popd
-
-#-------- build nxviewer
-
-pushd nxviewer
-pushd libvncauth
-xmkmf
-%make
-popd
-pushd nxviewer
-xmkmf
-%make
-popd
-pushd nxpasswd
-xmkmf
-%make
-popd
-popd
-
 #-------- build nxproxy
 pushd nxproxy
 %configure
@@ -247,40 +221,36 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 #create the directory tree
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/pkgconfig
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/nx
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/nx/pkgconfig
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 install -d -m 755 $RPM_BUILD_ROOT%{_includedir}
 install -d -m 755 $RPM_BUILD_ROOT%{_includedir}/nxcompsh
 
 #----------- nxcomp 
-install -m 755 nxcomp/libXcomp.so.* $RPM_BUILD_ROOT%{_libdir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.2
-ln -s libXcomp.so.2.0.0 $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.2
+install -m 755 nxcomp/libXcomp.so.* $RPM_BUILD_ROOT%{_libdir}/nx
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcomp.so.3
+ln -s libXcomp.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcomp.so.3
 
 #----------- nxX11
-install -m 755 nx-X11/lib/X11/libX11-nx.so.* $RPM_BUILD_ROOT%{_libdir}
-install -m 755 nx-X11/lib/Xext/libXext-nx.so.*  $RPM_BUILD_ROOT%{_libdir}
-install -m 755 nx-X11/lib/Xrender/libXrender-nx.so.* $RPM_BUILD_ROOT%{_libdir}
+install -m 755 nx-X11/lib/X11/libX11.so.* $RPM_BUILD_ROOT%{_libdir}/nx
+install -m 755 nx-X11/lib/Xext/libXext.so.*  $RPM_BUILD_ROOT%{_libdir}/nx
+install -m 755 nx-X11/lib/Xrender/libXrender.so.* $RPM_BUILD_ROOT%{_libdir}/nx
 install -m 755 nx-X11/programs/Xserver/nxagent $RPM_BUILD_ROOT%{_bindir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
-ln -s libX11-nx.so.6.2 $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
-ln -s libXext-nx.so.6.4 $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
-ln -s libXrender-nx.so.1.2 $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
-
-#----------- nxdesktop 
-install -m 755 nxdesktop/nxdesktop $RPM_BUILD_ROOT%{_bindir}
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libX11.so.6
+ln -s libX11.so.6.2 $RPM_BUILD_ROOT%{_libdir}/nx/libX11.so.6
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXext.so.6
+ln -s libXext.so.6.4 $RPM_BUILD_ROOT%{_libdir}/nx/libXext.so.6
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXrender.so.1
+ln -s libXrender.so.1.2.2 $RPM_BUILD_ROOT%{_libdir}/nx/libXrender.so.1
 
 #----------- nxcompext
-install -m 755 nxcompext/libXcompext.so.* $RPM_BUILD_ROOT%{_libdir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.2
-ln -s libXcompext.so.2.0.0 $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.2
-
-#----------- nxviewer
-install -m 755 nxviewer/nxviewer/nxviewer $RPM_BUILD_ROOT%{_bindir}
-install -m 755 nxviewer/nxpasswd/nxpasswd $RPM_BUILD_ROOT%{_bindir}
+install -m 755 nxcompext/libXcompext.so.* $RPM_BUILD_ROOT%{_libdir}/nx
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcompext.so.3
+ln -s libXcompext.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcompext.so.3
+install -m 755 nxcompshad/libXcompshad.so.* $RPM_BUILD_ROOT%{_libdir}/nx
+rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcompshad.so.3
+ln -s libXcompshad.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcompshad.so.3
 
 #----------- nxproxy 
 install -m 755 nxproxy/nxproxy $RPM_BUILD_ROOT%{_bindir}
@@ -290,16 +260,6 @@ install -m 755 nxssh/nxssh $RPM_BUILD_ROOT%{_bindir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
-#--------- binaries
-%files  -n  nxdesktop
-%defattr(-,root,root)
-%{_bindir}/nxdesktop
-
-%files -n nxviewer
-%defattr(-,root,root)
-%{_bindir}/nxviewer
-%{_bindir}/nxpasswd
 
 %files -n nxproxy
 %defattr(-,root,root)
@@ -312,20 +272,21 @@ rm -rf $RPM_BUILD_ROOT
 #---------- nxcomp
 %files -n %{lib_name_nxcomp}
 %defattr(-,root,root)
-%{_libdir}/libXcomp.so.*
+%{_libdir}/nx/libXcomp.so.*
 
 #---------- nx-x11
 %files -n  %{lib_name_nxx11}
 %defattr(-,root,root)
 %doc GUUG-Presentation-NX.pdf
-%{_libdir}/libX11-nx.so.*
-%{_libdir}/libXext-nx.so.*
-%{_libdir}/libXrender-nx.so.*
+%{_libdir}/nx/libX11.so.*
+%{_libdir}/nx/libXext.so.*
+%{_libdir}/nx/libXrender.so.*
 
 #-------- lib xcompext
 %files -n  %{lib_name_xcompext}
 %defattr(-,root,root)
-%{_libdir}/libXcompext.so.*
+%{_libdir}/nx/libXcompext.so.*
+%{_libdir}/nx/libXcompshad.so.*
 
 #-------- nxssh
 %files -n nxssh
