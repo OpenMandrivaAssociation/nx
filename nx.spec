@@ -22,7 +22,7 @@ Source10:	GUUG-Presentation-NX.pdf
 
 # rename libs with nx perfix => allow us to put them in %{_libdir} (from debian)
 # rediffed for 2.0
-Patch0:		nx-X11-2.0-libdir.patch
+Patch0:		nx-X11-3.1-libdir.patch
 
 Patch3:		nxviewer-2.0-lib.patch
 #allow compilation for x86_64
@@ -164,7 +164,7 @@ Nx ssh client
 
 %prep
 %setup -q -c -a 1 -a 2 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
-#%patch0
+%patch0
 #%patch3
 #%patch4
 
@@ -221,36 +221,35 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 #create the directory tree
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/nx
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/nx/pkgconfig
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/pkgconfig
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 install -d -m 755 $RPM_BUILD_ROOT%{_includedir}
 install -d -m 755 $RPM_BUILD_ROOT%{_includedir}/nxcompsh
 
 #----------- nxcomp 
-install -m 755 nxcomp/libXcomp.so.* $RPM_BUILD_ROOT%{_libdir}/nx
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcomp.so.3
-ln -s libXcomp.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcomp.so.3
+install -m 755 nxcomp/libXcomp.so.* $RPM_BUILD_ROOT%{_libdir}
+rm -f $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.3
+ln -s libXcomp.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.3
 
 #----------- nxX11
-install -m 755 nx-X11/lib/X11/libX11.so.* $RPM_BUILD_ROOT%{_libdir}/nx
-install -m 755 nx-X11/lib/Xext/libXext.so.*  $RPM_BUILD_ROOT%{_libdir}/nx
-install -m 755 nx-X11/lib/Xrender/libXrender.so.* $RPM_BUILD_ROOT%{_libdir}/nx
+install -m 755 nx-X11/lib/X11/libX11-nx.so.* $RPM_BUILD_ROOT%{_libdir}
+install -m 755 nx-X11/lib/Xext/libXext-nx.so.*  $RPM_BUILD_ROOT%{_libdir}
+install -m 755 nx-X11/lib/Xrender/libXrender-nx.so.* $RPM_BUILD_ROOT%{_libdir}
 install -m 755 nx-X11/programs/Xserver/nxagent $RPM_BUILD_ROOT%{_bindir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libX11.so.6
-ln -s libX11.so.6.2 $RPM_BUILD_ROOT%{_libdir}/nx/libX11.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXext.so.6
-ln -s libXext.so.6.4 $RPM_BUILD_ROOT%{_libdir}/nx/libXext.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXrender.so.1
-ln -s libXrender.so.1.2.2 $RPM_BUILD_ROOT%{_libdir}/nx/libXrender.so.1
+rm -f $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
+ln -s libX11.so.6.2 $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
+rm -f $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
+ln -s libXext.so.6.4 $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
+rm -f $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
+ln -s libXrender.so.1.2.2 $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
 
 #----------- nxcompext
-install -m 755 nxcompext/libXcompext.so.* $RPM_BUILD_ROOT%{_libdir}/nx
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcompext.so.3
-ln -s libXcompext.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcompext.so.3
-install -m 755 nxcompshad/libXcompshad.so.* $RPM_BUILD_ROOT%{_libdir}/nx
-rm -f $RPM_BUILD_ROOT%{_libdir}/nx/libXcompshad.so.3
-ln -s libXcompshad.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/nx/libXcompshad.so.3
+install -m 755 nxcompext/libXcompext.so.* $RPM_BUILD_ROOT%{_libdir}
+rm -f $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.3
+ln -s libXcompext.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.3
+install -m 755 nxcompshad/libXcompshad.so.* $RPM_BUILD_ROOT%{_libdir}
+rm -f $RPM_BUILD_ROOT%{_libdir}/libXcompshad.so.3
+ln -s libXcompshad.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcompshad.so.3
 
 #----------- nxproxy 
 install -m 755 nxproxy/nxproxy $RPM_BUILD_ROOT%{_bindir}
@@ -272,21 +271,21 @@ rm -rf $RPM_BUILD_ROOT
 #---------- nxcomp
 %files -n %{lib_name_nxcomp}
 %defattr(-,root,root)
-%{_libdir}/nx/libXcomp.so.*
+%{_libdir}/libXcomp.so.*
 
 #---------- nx-x11
 %files -n  %{lib_name_nxx11}
 %defattr(-,root,root)
 %doc GUUG-Presentation-NX.pdf
-%{_libdir}/nx/libX11.so.*
-%{_libdir}/nx/libXext.so.*
-%{_libdir}/nx/libXrender.so.*
+%{_libdir}/libX11-nx.so.*
+%{_libdir}/libXext-nx.so.*
+%{_libdir}/libXrender-nx.so.*
 
 #-------- lib xcompext
 %files -n  %{lib_name_xcompext}
 %defattr(-,root,root)
-%{_libdir}/nx/libXcompext.so.*
-%{_libdir}/nx/libXcompshad.so.*
+%{_libdir}/libXcompext.so.*
+%{_libdir}/libXcompshad.so.*
 
 #-------- nxssh
 %files -n nxssh
