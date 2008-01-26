@@ -32,7 +32,7 @@ License: 	MIT/GPL
 Group: 		Networking/Remote access
 Url: 		http://www.nomachine.com/sources.php
 BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires:	X11-devel
+BuildRequires:	X11-devel libfontconfig-devel
 BuildRequires:	zlib-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libjpeg-devel
