@@ -187,6 +187,7 @@ export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
 perl -pi -e "s/LDFLAGS     = /LDFLAGS = -fPIC/" Makefile
 perl -pi -e "s/CCFLAGS\s+=/CCFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+make clean
 %make
 popd
 
@@ -198,6 +199,19 @@ export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
 %configure
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
+make clean
+%make
+popd
+
+#-------- build nxcompshad lib
+pushd nxcompshad
+export CFLAGS="$RPM_OPT_FLAGS -fPIC"
+export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
+export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
+%configure
+perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
+make clean
 %make
 popd
 
