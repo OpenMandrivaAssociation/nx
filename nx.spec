@@ -2,13 +2,13 @@
 
 %define name nx
 %define version 3.1.0
-%define release %mkrel 1
+%define release %mkrel 2
 
 Summary: 	NoMachine NX
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0: 	nx-X11-%{version}-1.tar.bz2
+Source0: 	nx-X11-%{version}-3.tar.bz2
 Source1:	nxagent-%{version}-6.tar.bz2
 Source2:	nxauth-%{version}-1.tar.bz2
 Source4:	nxcompext-%{version}-2.tar.bz2
