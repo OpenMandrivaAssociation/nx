@@ -107,7 +107,7 @@ Xcomp library for NX subsystem
 #############
 
 %package -n	nxdesktop
-Summary:	A NX rdesktop agent
+Summary:	NX rdesktop agent
 Group:		Networking/Remote access
 
 %description -n nxdesktop
@@ -118,7 +118,7 @@ a nx tunnel.
 # nxviewer #
 ############
 %package -n	nxviewer	
-Summary:	The nxviewer is a NX vnc agent
+Summary:	NX vnc agent
 Group:		Networking/Remote access
 
 %description -n nxviewer
