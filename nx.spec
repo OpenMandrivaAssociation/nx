@@ -2,7 +2,7 @@
 
 %define name nx
 %define version 3.1.0
-%define release %mkrel 2
+%define release %mkrel 3
 
 Summary: 	NoMachine NX
 Name: 		%{name}
