@@ -1,22 +1,22 @@
 # most of the descriptions are stolen from the debian package
 
 %define name nx
-%define version 3.1.0
-%define release %mkrel 4
+%define version 3.2.0
+%define release %mkrel 1
 
 Summary: 	NoMachine NX
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0: 	nx-X11-%{version}-4.tar.bz2
-Source1:	nxagent-%{version}-7.tar.bz2
+Source0: 	nx-X11-%{version}-1.tar.bz2
+Source1:	nxagent-%{version}-3.tar.bz2
 Source2:	nxauth-%{version}-1.tar.bz2
-Source4:	nxcompext-%{version}-2.tar.bz2
-Source5:	nxcompshad-%{version}-2.tar.bz2
+Source4:	nxcompext-%{version}-1.tar.bz2
+Source5:	nxcompshad-%{version}-1.tar.bz2
 Source6:	nxwin-%{version}-3.tar.bz2
 Source7:	nxcomp-%{version}-6.tar.bz2
-Source8:	nxproxy-%{version}-2.tar.bz2
-Source9:	nxssh-%{version}-2.tar.bz2
+Source8:	nxproxy-%{version}-1.tar.bz2
+Source9:	nxssh-%{version}-1.tar.bz2
 
 Source10:	GUUG-Presentation-NX.pdf
 
