@@ -2,19 +2,19 @@
 
 %define name nx
 %define version 3.2.0
-%define release %mkrel 1
+%define release %mkrel 2
 
 Summary: 	NoMachine NX
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
 Source0: 	nx-X11-%{version}-1.tar.bz2
-Source1:	nxagent-%{version}-3.tar.bz2
+Source1:	nxagent-%{version}-5.tar.bz2
 Source2:	nxauth-%{version}-1.tar.bz2
 Source4:	nxcompext-%{version}-1.tar.bz2
-Source5:	nxcompshad-%{version}-1.tar.bz2
+Source5:	nxcompshad-%{version}-3.tar.bz2
 Source6:	nxwin-%{version}-3.tar.bz2
-Source7:	nxcomp-%{version}-6.tar.bz2
+Source7:	nxcomp-%{version}-7.tar.bz2
 Source8:	nxproxy-%{version}-1.tar.bz2
 Source9:	nxssh-%{version}-1.tar.bz2
 
@@ -211,6 +211,7 @@ export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
 %configure
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
+perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile
 make clean
 %make
 popd
