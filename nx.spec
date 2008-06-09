@@ -60,9 +60,13 @@ Provides:	xcompshad = %{version}-%{release}
 %description -n %{lib_name_xcompext}
 Xcompext and Xcompshad library needed by the NX framework
 
+%if %mdkversion < 200900
 %post -n %{lib_name_xcompext} -p /sbin/ldconfig
+%endif
 %postun -n %{lib_name_xcompext}
+%if %mdkversion < 200900
 /sbin/ldconfig
+%endif
 
 
 ###############
@@ -79,9 +83,13 @@ Provides:	nxX11 = %{version}-%{release}
 %description -n %{lib_name_nxx11}
 NX-X11 lib for the NX framework
 
+%if %mdkversion < 200900
 %post -n %{lib_name_nxx11} -p /sbin/ldconfig
+%endif
 %postun -n %{lib_name_nxx11}
+%if %mdkversion < 200900
 /sbin/ldconfig
+%endif
 
 ##########
 # nxcomp #
@@ -98,9 +106,13 @@ Provides:	xcomp = %{version}-%{release}
 %description -n %{lib_name_nxcomp}
 Xcomp library for NX subsystem
 
+%if %mdkversion < 200900
 %post -n %{lib_name_nxcomp} -p /sbin/ldconfig
+%endif
 %postun -n %{lib_name_nxcomp}
+%if %mdkversion < 200900
 /sbin/ldconfig
+%endif
 
 #############
 # nxdesktop #
