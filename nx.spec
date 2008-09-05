@@ -2,7 +2,7 @@
 
 %define name nx
 %define version 3.2.0
-%define release %mkrel 3
+%define release %mkrel 4
 
 Summary: 	NoMachine NX
 Name: 		%{name}
@@ -20,13 +20,9 @@ Source9:	nxssh-%{version}-1.tar.bz2
 
 Source10:	GUUG-Presentation-NX.pdf
 
-# rename libs with nx perfix => allow us to put them in %{_libdir} (from debian)
+# rename libs with nx prefix => allow us to put them in %{_libdir} (from debian)
 # rediffed for 2.0
 Patch0:		nx-X11-3.1-libdir.patch
-
-Patch3:		nxviewer-2.0-lib.patch
-#allow compilation for x86_64
-Patch4:		nx-X11-2.0-x86_64.patch
 
 License: 	MIT/GPL
 Group: 		Networking/Remote access
@@ -114,29 +110,6 @@ Xcomp library for NX subsystem
 /sbin/ldconfig
 %endif
 
-#############
-# nxdesktop #
-#############
-
-%package -n	nxdesktop
-Summary:	NX rdesktop agent
-Group:		Networking/Remote access
-
-%description -n nxdesktop
-The nxdesktop is a rdesktop agent, for connecting to windows machines through
-a nx tunnel.
-
-############
-# nxviewer #
-############
-%package -n	nxviewer	
-Summary:	NX vnc agent
-Group:		Networking/Remote access
-
-%description -n nxviewer
-The nxviewer is a vnc agent, for connecting to vnc servers (windows or linux)
-through a nx tunnel.
-
 ###########
 # nxproxy #
 ###########
@@ -177,8 +150,6 @@ Nx ssh client
 %prep
 %setup -q -c -a 1 -a 2 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
 %patch0
-#%patch3
-#%patch4
 
 %build
 # documentation explainig how NX works
