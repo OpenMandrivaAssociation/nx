@@ -1,22 +1,18 @@
 # most of the descriptions are stolen from the debian package
 
-%define name nx
-%define version 3.2.0
-%define release %mkrel 4
-
 Summary: 	NoMachine NX
-Name: 		%{name}
-Version: 	%{version}
-Release: 	%{release}
-Source0: 	nx-X11-%{version}-1.tar.bz2
-Source1:	nxagent-%{version}-5.tar.bz2
-Source2:	nxauth-%{version}-1.tar.bz2
-Source4:	nxcompext-%{version}-1.tar.bz2
-Source5:	nxcompshad-%{version}-3.tar.bz2
-Source6:	nxwin-%{version}-3.tar.bz2
-Source7:	nxcomp-%{version}-7.tar.bz2
-Source8:	nxproxy-%{version}-1.tar.bz2
-Source9:	nxssh-%{version}-1.tar.bz2
+Name: 		nx
+Version: 	3.3.0
+Release: 	%{mkrel 1}
+Source0: 	nx-X11-%{version}-3.tar.gz
+Source1:	nxagent-%{version}-6.tar.gz
+Source2:	nxauth-%{version}-1.tar.gz
+Source4:	nxcompext-%{version}-2.tar.gz
+Source5:	nxcompshad-%{version}-2.tar.gz
+Source6:	nxwin-%{version}-2.tar.gz
+Source7:	nxcomp-%{version}-3.tar.gz
+Source8:	nxproxy-%{version}-2.tar.gz
+Source9:	nxssh-%{version}-1.tar.gz
 
 Source10:	GUUG-Presentation-NX.pdf
 
@@ -24,15 +20,16 @@ Source10:	GUUG-Presentation-NX.pdf
 # rediffed for 2.0
 Patch0:		nx-X11-3.1-libdir.patch
 
-License: 	MIT/GPL
+License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
-Url: 		http://www.nomachine.com/sources.php
+URL: 		http://www.nomachine.com/sources.php
 BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires:	X11-devel libfontconfig-devel
+BuildRequires:	X11-devel
+BuildRequires:	libfontconfig-devel
 BuildRequires:	zlib-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libjpeg-devel
-BuildRequires:	automake1.7, automake1.4
+#BuildRequires:	automake1.7, automake1.4
 BuildRequires:  openssl-devel
 BuildRequires:	imake
 
@@ -162,25 +159,25 @@ cp %{SOURCE10} ./
 #-------- Build nxcomp
 
 pushd nxcomp
-export CFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
+export CFLAGS="%{optflags} -fPIC"
+export CXXFLAGS="%{optflags} -fPIC"
+export CPPFLAGS="%{optflags} -fPIC"
 %configure
 # configure script doesn't care of CFLAGS
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s/LDFLAGS     = /LDFLAGS = -fPIC/" Makefile
-perl -pi -e "s/CCFLAGS\s+=/CCFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+perl -pi -e "s/CCFLAGS\s+=/CCFLAGS = %{optflags} -fPIC/" Makefile
 make clean
 %make
 popd
 
 #-------- build nxcompext lib
 pushd nxcompext
-export CFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
+export CFLAGS="%{optflags} -fPIC"
+export CXXFLAGS="%{optflags} -fPIC"
+export CPPFLAGS="%{optflags} -fPIC"
 %configure
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
 make clean
 %make
@@ -188,11 +185,11 @@ popd
 
 #-------- build nxcompshad lib
 pushd nxcompshad
-export CFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
-export CPPFLAGS="$RPM_OPT_FLAGS -fPIC"
+export CFLAGS="%{optflags} -fPIC"
+export CXXFLAGS="%{optflags} -fPIC"
+export CPPFLAGS="%{optflags} -fPIC"
 %configure
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = $RPM_OPT_FLAGS -fPIC/" Makefile
+perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
 perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile
 make clean
@@ -217,46 +214,46 @@ pushd nxssh
 popd 
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 #create the directory tree
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/pkgconfig
-install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
-install -d -m 755 $RPM_BUILD_ROOT%{_includedir}
-install -d -m 755 $RPM_BUILD_ROOT%{_includedir}/nxcompsh
+install -d -m 755 %{buildroot}%{_libdir}/pkgconfig
+install -d -m 755 %{buildroot}%{_bindir}
+install -d -m 755 %{buildroot}%{_includedir}
+install -d -m 755 %{buildroot}%{_includedir}/nxcompsh
 
 #----------- nxcomp 
-install -m 755 nxcomp/libXcomp.so.* $RPM_BUILD_ROOT%{_libdir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.3
-ln -s libXcomp.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcomp.so.3
+install -m 755 nxcomp/libXcomp.so.* %{buildroot}%{_libdir}
+rm -f %{buildroot}%{_libdir}/libXcomp.so.3
+ln -s libXcomp.so.3.1.0 %{buildroot}%{_libdir}/libXcomp.so.3
 
 #----------- nxX11
-install -m 755 nx-X11/lib/X11/libX11-nx.so.* $RPM_BUILD_ROOT%{_libdir}
-install -m 755 nx-X11/lib/Xext/libXext-nx.so.*  $RPM_BUILD_ROOT%{_libdir}
-install -m 755 nx-X11/lib/Xrender/libXrender-nx.so.* $RPM_BUILD_ROOT%{_libdir}
-install -m 755 nx-X11/programs/Xserver/nxagent $RPM_BUILD_ROOT%{_bindir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
-ln -s libX11.so.6.2 $RPM_BUILD_ROOT%{_libdir}/libX11-nx.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
-ln -s libXext.so.6.4 $RPM_BUILD_ROOT%{_libdir}/libXext-nx.so.6
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
-ln -s libXrender.so.1.2.2 $RPM_BUILD_ROOT%{_libdir}/libXrender-nx.so.1
+install -m 755 nx-X11/lib/X11/libX11-nx.so.* %{buildroot}%{_libdir}
+install -m 755 nx-X11/lib/Xext/libXext-nx.so.*  %{buildroot}%{_libdir}
+install -m 755 nx-X11/lib/Xrender/libXrender-nx.so.* %{buildroot}%{_libdir}
+install -m 755 nx-X11/programs/Xserver/nxagent %{buildroot}%{_bindir}
+rm -f %{buildroot}%{_libdir}/libX11-nx.so.6
+ln -s libX11.so.6.2 %{buildroot}%{_libdir}/libX11-nx.so.6
+rm -f %{buildroot}%{_libdir}/libXext-nx.so.6
+ln -s libXext.so.6.4 %{buildroot}%{_libdir}/libXext-nx.so.6
+rm -f %{buildroot}%{_libdir}/libXrender-nx.so.1
+ln -s libXrender.so.1.2.2 %{buildroot}%{_libdir}/libXrender-nx.so.1
 
 #----------- nxcompext
-install -m 755 nxcompext/libXcompext.so.* $RPM_BUILD_ROOT%{_libdir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.3
-ln -s libXcompext.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcompext.so.3
-install -m 755 nxcompshad/libXcompshad.so.* $RPM_BUILD_ROOT%{_libdir}
-rm -f $RPM_BUILD_ROOT%{_libdir}/libXcompshad.so.3
-ln -s libXcompshad.so.3.1.0 $RPM_BUILD_ROOT%{_libdir}/libXcompshad.so.3
+install -m 755 nxcompext/libXcompext.so.* %{buildroot}%{_libdir}
+rm -f %{buildroot}%{_libdir}/libXcompext.so.3
+ln -s libXcompext.so.3.1.0 %{buildroot}%{_libdir}/libXcompext.so.3
+install -m 755 nxcompshad/libXcompshad.so.* %{buildroot}%{_libdir}
+rm -f %{buildroot}%{_libdir}/libXcompshad.so.3
+ln -s libXcompshad.so.3.1.0 %{buildroot}%{_libdir}/libXcompshad.so.3
 
 #----------- nxproxy 
-install -m 755 nxproxy/nxproxy $RPM_BUILD_ROOT%{_bindir}
+install -m 755 nxproxy/nxproxy %{buildroot}%{_bindir}
 
 #----------- nxssh
-install -m 755 nxssh/nxssh $RPM_BUILD_ROOT%{_bindir}
+install -m 755 nxssh/nxssh %{buildroot}%{_bindir}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files -n nxproxy
 %defattr(-,root,root)
