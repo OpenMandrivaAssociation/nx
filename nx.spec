@@ -3,7 +3,7 @@
 Summary: 	NoMachine NX
 Name: 		nx
 Version: 	3.3.0
-Release: 	%{mkrel 1}
+Release: 	%mkrel 2
 Source0: 	nx-X11-%{version}-3.tar.gz
 Source1:	nxagent-%{version}-6.tar.gz
 Source2:	nxauth-%{version}-1.tar.gz
@@ -19,6 +19,8 @@ Source10:	GUUG-Presentation-NX.pdf
 # rename libs with nx prefix => allow us to put them in %{_libdir} (from debian)
 # rediffed for 2.0
 Patch0:		nx-X11-3.1-libdir.patch
+Patch1:		nx-X11-fix-format-errors.patch
+Patch2:		nxssh-fix-format-errors.patch
 
 License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
@@ -146,7 +148,9 @@ Nx ssh client
 
 %prep
 %setup -q -c -a 1 -a 2 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
-%patch0
+%patch0 -p 0
+%patch1 -p 0
+%patch2 -p 0
 
 %build
 # documentation explainig how NX works
@@ -162,7 +166,7 @@ pushd nxcomp
 export CFLAGS="%{optflags} -fPIC"
 export CXXFLAGS="%{optflags} -fPIC"
 export CPPFLAGS="%{optflags} -fPIC"
-%configure
+%configure2_5x
 # configure script doesn't care of CFLAGS
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s/LDFLAGS     = /LDFLAGS = -fPIC/" Makefile
@@ -176,7 +180,7 @@ pushd nxcompext
 export CFLAGS="%{optflags} -fPIC"
 export CXXFLAGS="%{optflags} -fPIC"
 export CPPFLAGS="%{optflags} -fPIC"
-%configure
+%configure2_5x
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
 make clean
@@ -188,7 +192,7 @@ pushd nxcompshad
 export CFLAGS="%{optflags} -fPIC"
 export CXXFLAGS="%{optflags} -fPIC"
 export CPPFLAGS="%{optflags} -fPIC"
-%configure
+%configure2_5x
 perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
 perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
 perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile
@@ -203,13 +207,13 @@ popd
 
 #-------- build nxproxy
 pushd nxproxy
-%configure
+%configure2_5x
 %make
 popd
 
 #-------- build nxssh
 pushd nxssh
-%configure
+%configure2_5x
 %make
 popd 
 
