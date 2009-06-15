@@ -4,13 +4,13 @@ Summary: 	NoMachine NX
 Name: 		nx
 Version: 	3.3.0
 Release: 	%mkrel 2
-Source0: 	nx-X11-%{version}-3.tar.gz
-Source1:	nxagent-%{version}-6.tar.gz
+Source0: 	nx-X11-%{version}-6.tar.gz
+Source1:	nxagent-%{version}-13.tar.gz
 Source2:	nxauth-%{version}-1.tar.gz
-Source4:	nxcompext-%{version}-2.tar.gz
-Source5:	nxcompshad-%{version}-2.tar.gz
+Source4:	nxcompext-%{version}-4.tar.gz
+Source5:	nxcompshad-%{version}-3.tar.gz
 Source6:	nxwin-%{version}-2.tar.gz
-Source7:	nxcomp-%{version}-3.tar.gz
+Source7:	nxcomp-%{version}-4.tar.gz
 Source8:	nxproxy-%{version}-2.tar.gz
 Source9:	nxssh-%{version}-1.tar.gz
 
