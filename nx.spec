@@ -21,7 +21,7 @@ Source10:	GUUG-Presentation-NX.pdf
 Patch0:		nx-X11-3.1-libdir.patch
 Patch1:		nx-X11-fix-format-errors.patch
 Patch2:		nxssh-fix-format-errors.patch
-
+Patch3:		nx-3.3.0-nxcomp-glibc2.10.patch
 License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
 URL: 		http://www.nomachine.com/sources.php
@@ -151,6 +151,10 @@ Nx ssh client
 %patch0 -p 0
 %patch1 -p 0
 %patch2 -p 0
+
+pushd nxcomp
+%patch3 -p0
+popd
 
 %build
 # documentation explainig how NX works
