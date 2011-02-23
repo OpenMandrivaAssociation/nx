@@ -33,6 +33,7 @@ BuildRequires:	libjpeg-devel
 #BuildRequires:	automake1.7, automake1.4
 BuildRequires:  openssl-devel
 BuildRequires:	imake
+BuildRequires:	liblbxutil-devel
 
 %description
 NoMachine NX is the next-generation X compression and roundtrip
