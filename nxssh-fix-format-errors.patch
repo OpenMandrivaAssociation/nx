@@ -1,0 +1,51 @@
+diff -Naur --exclude '*.orig' --exclude '*~' nxssh/proxy.c nxssh-fix-format-errors/proxy.c
+--- nxssh/proxy.c	2007-12-20 13:05:58.000000000 +0100
++++ nxssh-fix-format-errors/proxy.c	2009-03-05 12:33:18.000000000 +0100
+@@ -2199,7 +2199,7 @@
+                         line[l]     = '\\';
+                         line[l + 1] = '\0';
+ 
+-                        debug(line);
++                        debug("%s", line);
+ 
+                         l = 0;
+                 }
+@@ -2209,7 +2209,7 @@
+ 
+         if (line[0] != '\0')
+         {
+-            debug(line);
++            debug("%s", line);
+         }
+ 
+         debug("---");
+@@ -2239,7 +2239,7 @@
+                         line[l]     = '\\';
+                         line[l + 1] = '\0';
+ 
+-                        debug(line);
++                        debug("%s", line);
+ 
+                         l = 0;
+                 }
+@@ -2249,7 +2249,7 @@
+ 
+         if (line[0] != '\0')
+         {
+-            debug(line);
++            debug("%s", line);
+         }
+ 
+         debug("---");
+diff -Naur --exclude '*.orig' --exclude '*~' nxssh/readpass.c nxssh-fix-format-errors/readpass.c
+--- nxssh/readpass.c	2007-09-12 13:30:54.000000000 +0200
++++ nxssh-fix-format-errors/readpass.c	2009-03-05 12:32:41.000000000 +0100
+@@ -173,7 +173,7 @@
+         {
+                 size_t len;
+                 int  retr;
+-                fprintf(stdout, prompt);
++                fprintf(stdout, "%s", prompt);
+                 fflush(stdout);
+ 
+                 len = retr = 0;

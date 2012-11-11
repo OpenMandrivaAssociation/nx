@@ -1,0 +1,11 @@
+sources:
+  "GUUG-Presentation-NX.pdf:"	fbd6969080b1ba84d4c7d244a496f7bcc7e33c16
+  "nxagent-3.4.0-16.tar.gz:"	da1159aaab304cc90904029a3be937a688f9ac81
+  "nxauth-3.4.0-3.tar.gz:"	da99b2c85ed81c1ddc5dca7b2105d435d6897e6b
+  "nxcomp-3.4.0-7.tar.gz:"	d35abe56ec8aa96cd2748eda5831254f1171cb1f
+  "nxcompext-3.4.0-1.tar.gz:"	2a594c6cdb837a2de20079db0702daa2ba1c288f
+  "nxcompshad-3.4.0-3.tar.gz:"	93df71868b7eb74cb9fae9f4f8b9630e51f8191a
+  "nxproxy-3.4.0-2.tar.gz:"	7d359c3e50708c4e774b126cc1e646c5f6ed3c3a
+  "nxssh-3.4.0-2.tar.gz:"	e65864baac62496839a65ebab586d69c4fca2f19
+  "nxwin-3.4.0-7.tar.gz:"	4d9851f413fa21b965442cffaedd09c67a35da1c
+  "nx-X11-3.4.0-4.tar.gz:"	2d6e7eab23a627e705e93389c5e2b1a5d9c65a94
