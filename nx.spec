@@ -1,18 +1,24 @@
 # most of the descriptions are stolen from the debian package
+%global _hardened_build 1
+%define _pkglibdir %{_libdir}/nx
+%define _pkgdatadir %{_datadir}/nx
+%define _pkglibexecdir %{_libexecdir}/nx
+
+%define Werror_cflags %nil
 
 Summary: 	NoMachine NX
 Name: 		nx
-Version: 	3.4.0
+Version: 	3.5.0
 Release: 	%mkrel 1
-Source0: 	nx-X11-%{version}-4.tar.gz
-Source1:	nxagent-%{version}-16.tar.gz
-Source2:	nxauth-%{version}-3.tar.gz
-Source4:	nxcompext-%{version}-1.tar.gz
-Source5:	nxcompshad-%{version}-3.tar.gz
-Source6:	nxwin-%{version}-7.tar.gz
-Source7:	nxcomp-%{version}-7.tar.gz
-Source8:	nxproxy-%{version}-2.tar.gz
-Source9:	nxssh-%{version}-2.tar.gz
+Source0: 	http://code.x2go.org/releases/source/nx-libs/nx-X11/%{name}-X11-%{version}-2.tar.gz
+Source1:	http://code.x2go.org/releases/source/nx-libs/nxagent/nxagent-%{version}-7.tar.gz
+Source2:	http://code.x2go.org/releases/source/nx-libs/nxauth/nxauth-%{version}-1.tar.gz
+Source4:	http://code.x2go.org/releases/source/nx-libs/nxcompext/nxcompext-%{version}-1.tar.gz
+Source5:	http://code.x2go.org/releases/source/nx-libs/nxcompshad/nxcompshad-%{version}-2.tar.gz
+Source6:	http://64.34.173.142/download/%{version}/sources/nxwin-%{version}-4.tar.gz
+Source7:	http://code.x2go.org/releases/source/nx-libs/nxcomp/nxcomp-%{version}-2.tar.gz
+Source8:	http://code.x2go.org/releases/source/nx-libs/nxproxy/nxproxy-%{version}-1.tar.gz
+Source9:	http://64.34.173.142/download/%{version}/sources/nxssh-%{version}-2.tar.gz
 
 Source10:	GUUG-Presentation-NX.pdf
 
@@ -21,19 +27,29 @@ Source10:	GUUG-Presentation-NX.pdf
 Patch0:		nx-X11-3.1-libdir.patch
 Patch1:		nx-X11-fix-format-errors.patch
 Patch2:		nxssh-fix-format-errors.patch
+
+Patch3:		nx-3.5.0-optflags.patch
+Patch4:		nx-3.5.0-syslibs.patch
+Patch5:		http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/net-misc/nx/files/nx-3.5.0-libpng15.patch
+
 License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
 URL: 		http://www.nomachine.com/sources.php
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires:	X11-devel
-BuildRequires:	libfontconfig-devel
-BuildRequires:	zlib-devel
-BuildRequires:	libpng-devel
-BuildRequires:	libjpeg-devel
+BuildRequires:	pkgconfig(x11)
+BuildRequires:	pkgconfig(fontconfig)
+BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(libpng)
+BuildRequires:	pkgconfig(xdamage)
+BuildRequires:	jpeg-devel
 #BuildRequires:	automake1.7, automake1.4
-BuildRequires:  openssl-devel
+BuildRequires:  pkgconfig(openssl)
 BuildRequires:	imake
-BuildRequires:	liblbxutil-devel
+BuildRequires:	pkgconfig(lbxutil)
+BuildRequires:	pkgconfig(xext)
+BuildRequires:	pkgconfig(xrandr)
+BuildRequires:	pkgconfig(xtst)
+BuildRequires:	pkgconfig(xi)
+BuildRequires:	pkgconfig(expat)
 
 %description
 NoMachine NX is the next-generation X compression and roundtrip
@@ -55,15 +71,6 @@ Provides:	xcompshad = %{version}-%{release}
 %description -n %{lib_name_xcompext}
 Xcompext and Xcompshad library needed by the NX framework
 
-%if %mdkversion < 200900
-%post -n %{lib_name_xcompext} -p /sbin/ldconfig
-%endif
-%postun -n %{lib_name_xcompext}
-%if %mdkversion < 200900
-/sbin/ldconfig
-%endif
-
-
 ###############
 # nx-X11 lib  #
 ###############
@@ -77,14 +84,6 @@ Provides:	nxX11 = %{version}-%{release}
 
 %description -n %{lib_name_nxx11}
 NX-X11 lib for the NX framework
-
-%if %mdkversion < 200900
-%post -n %{lib_name_nxx11} -p /sbin/ldconfig
-%endif
-%postun -n %{lib_name_nxx11}
-%if %mdkversion < 200900
-/sbin/ldconfig
-%endif
 
 ##########
 # nxcomp #
@@ -100,14 +99,6 @@ Provides:	xcomp = %{version}-%{release}
 
 %description -n %{lib_name_nxcomp}
 Xcomp library for NX subsystem
-
-%if %mdkversion < 200900
-%post -n %{lib_name_nxcomp} -p /sbin/ldconfig
-%endif
-%postun -n %{lib_name_nxcomp}
-%if %mdkversion < 200900
-/sbin/ldconfig
-%endif
 
 ###########
 # nxproxy #
@@ -151,6 +142,15 @@ Nx ssh client
 %patch0 -p 0
 %patch1 -p 0
 %patch2 -p 0
+%patch3 -p1
+%patch4 -p1
+%patch5 -p0
+
+cat <<EOF >>nx-X11/config/cf/host.def
+#define UseRpath YES
+#define UsrLibDir %{_pkglibdir}
+EOF
+find nx-X11 -name "*.[ch]" -print0 | xargs -0 chmod -c -x
 
 %build
 # documentation explainig how NX works
@@ -160,62 +160,37 @@ cp %{SOURCE10} ./
 # We must build all the lib, and somes binaries at the same shot
 # because -I ../nxFOO <-- It *sux*
 
-#-------- Build nxcomp
+export CFLAGS="%{optflags}"
+%ifarch x86_64 ppc64
+export CFLAGS="$CFLAGS -fPIC -DPIC"
+%endif
+export CXXFLAGS="$CFLAGS"
+export RPM_OPT_FLAGS="$CFLAGS"
+export LDFLAGS="%{?__global_ldflags} -Wl,-rpath,%{_pkglibdir}"
 
-pushd nxcomp
-export CFLAGS="%{optflags} -fPIC"
-export CXXFLAGS="%{optflags} -fPIC"
-export CPPFLAGS="%{optflags} -fPIC"
-%configure2_5x
-# configure script doesn't care of CFLAGS
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
-perl -pi -e "s/LDFLAGS     = /LDFLAGS = -fPIC/" Makefile
-perl -pi -e "s/CCFLAGS\s+=/CCFLAGS = %{optflags} -fPIC/" Makefile
-make clean
-%make
-popd
+# The commented parts show how the build would proceed step by step.
+# This information is important in case someone wants to split this package
+# (which would be the proper thing to do).
+# Within the commented area the make World invocation does all for
+# you. It isn't placed by accident in the middle of the commented
+# build instructions, as this is where the X11 libs would be built
 
-#-------- build nxcompext lib
+# build Compression Library and Proxy
+for i in nxcompshad nxcomp nxproxy; do
+  pushd $i; ./configure; perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile && perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile && perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile && make clean && make %{?_smp_mflags} CCFLAGS="$CFLAGS"; popd
+done
+# build X11 Support Libraries and Agents
+SHLIBGLOBALSFLAGS="$LDFLAGS" LOCAL_LDFLAGS="$LDFLAGS" make %{?_smp_mflags} -C nx-X11 World
+%if 0
+# build Extended Compression Library
 pushd nxcompext
-export CFLAGS="%{optflags} -fPIC"
-export CXXFLAGS="%{optflags} -fPIC"
-export CPPFLAGS="%{optflags} -fPIC"
-%configure2_5x
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
-perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
-make clean
-%make
+  ./configure; make %{?_smp_mflags}
 popd
-
-#-------- build nxcompshad lib
-pushd nxcompshad
-export CFLAGS="%{optflags} -fPIC"
-export CXXFLAGS="%{optflags} -fPIC"
-export CPPFLAGS="%{optflags} -fPIC"
-%configure2_5x
-perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile
-perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile
-perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile
-make clean
-%make
-popd
-
-#-------- Build nx X11 libs
-pushd nx-X11
-make World
-popd
-
-#-------- build nxproxy
-pushd nxproxy
-%configure2_5x
-%make
-popd
-
-#-------- build nxssh
+%endif
 pushd nxssh
-%configure2_5x
-%make
-popd 
+./configure --without-zlib-version-check
+make %{?_smp_mflags} nxssh
+popd
 
 %install
 rm -rf %{buildroot}
@@ -256,25 +231,18 @@ install -m 755 nxproxy/nxproxy %{buildroot}%{_bindir}
 #----------- nxssh
 install -m 755 nxssh/nxssh %{buildroot}%{_bindir}
 
-%clean
-rm -rf %{buildroot}
-
 %files -n nxproxy
-%defattr(-,root,root)
 %{_bindir}/nxproxy
 
 %files -n nxagent
-%defattr(-,root,root)
 %{_bindir}/nxagent
 
 #---------- nxcomp
 %files -n %{lib_name_nxcomp}
-%defattr(-,root,root)
 %{_libdir}/libXcomp.so.*
 
 #---------- nx-x11
 %files -n  %{lib_name_nxx11}
-%defattr(-,root,root)
 %doc GUUG-Presentation-NX.pdf
 %{_libdir}/libX11-nx.so.*
 %{_libdir}/libXext-nx.so.*
@@ -282,13 +250,9 @@ rm -rf %{buildroot}
 
 #-------- lib xcompext
 %files -n  %{lib_name_xcompext}
-%defattr(-,root,root)
 %{_libdir}/libXcompext.so.*
 %{_libdir}/libXcompshad.so.*
 
 #-------- nxssh
-%files -n nxssh
 %defattr(-,root,root)
 %{_bindir}/nxssh
-
-
