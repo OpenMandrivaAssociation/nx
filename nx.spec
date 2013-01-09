@@ -50,6 +50,7 @@ BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	pkgconfig(xtst)
 BuildRequires:	pkgconfig(xi)
 BuildRequires:	pkgconfig(expat)
+BuildRequires:	pkgconfig(libtirpc)
 
 %description
 NoMachine NX is the next-generation X compression and roundtrip
