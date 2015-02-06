@@ -9,7 +9,7 @@
 Summary: 	NoMachine NX
 Name: 		nx
 Version: 	3.5.0
-Release: 	%mkrel 1
+Release: 	2
 Source0: 	http://code.x2go.org/releases/source/nx-libs/nx-X11/%{name}-X11-%{version}-2.tar.gz
 Source1:	http://code.x2go.org/releases/source/nx-libs/nxagent/nxagent-%{version}-7.tar.gz
 Source2:	http://code.x2go.org/releases/source/nx-libs/nxauth/nxauth-%{version}-1.tar.gz
