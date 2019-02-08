@@ -35,6 +35,9 @@ BuildRequires:	pkgconfig(xi)
 BuildRequires:	pkgconfig(expat)
 BuildRequires:	pkgconfig(libtirpc)
 BuildRequires:	pkgconfig(fontenc)
+BuildRequires:	pkgconfig(libxml-2.0)
+BuildRequires:	pkgconfig(liblzma)
+BuildRequires:	pkgconfig(xproto)
 
 %description
 NoMachine NX is the next-generation X compression and roundtrip
