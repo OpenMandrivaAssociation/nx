@@ -1,3 +1,6 @@
+
+%define srcname %{name}-libs
+
 # most of the descriptions are stolen from the debian package
 %global _hardened_build 1
 %define _pkglibdir %{_libdir}/nx
@@ -8,29 +11,11 @@
 
 Summary: 	NoMachine NX
 Name: 		nx
-Version: 	3.5.0
-Release: 	2
-Source0: 	http://code.x2go.org/releases/source/nx-libs/nx-X11/%{name}-X11-%{version}-2.tar.gz
-Source1:	http://code.x2go.org/releases/source/nx-libs/nxagent/nxagent-%{version}-7.tar.gz
-Source2:	http://code.x2go.org/releases/source/nx-libs/nxauth/nxauth-%{version}-1.tar.gz
-Source4:	http://code.x2go.org/releases/source/nx-libs/nxcompext/nxcompext-%{version}-1.tar.gz
-Source5:	http://code.x2go.org/releases/source/nx-libs/nxcompshad/nxcompshad-%{version}-2.tar.gz
-Source6:	http://64.34.173.142/download/%{version}/sources/nxwin-%{version}-4.tar.gz
-Source7:	http://code.x2go.org/releases/source/nx-libs/nxcomp/nxcomp-%{version}-2.tar.gz
-Source8:	http://code.x2go.org/releases/source/nx-libs/nxproxy/nxproxy-%{version}-1.tar.gz
-Source9:	http://64.34.173.142/download/%{version}/sources/nxssh-%{version}-2.tar.gz
+Version: 	3.5.0.33
+Release: 	1
+Source0: 	http://code.x2go.org/releases/source/%{srcname}/%{srcname}-%{version}-full.tar.gz
 
 Source10:	GUUG-Presentation-NX.pdf
-
-# rename libs with nx prefix => allow us to put them in %{_libdir} (from debian)
-# rediffed for 2.0
-Patch0:		nx-X11-3.1-libdir.patch
-Patch1:		nx-X11-fix-format-errors.patch
-Patch2:		nxssh-fix-format-errors.patch
-
-Patch3:		nx-3.5.0-optflags.patch
-Patch4:		nx-3.5.0-syslibs.patch
-Patch5:		http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/net-misc/nx/files/nx-3.5.0-libpng15.patch
 
 License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
@@ -41,9 +26,7 @@ BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libpng)
 BuildRequires:	pkgconfig(xdamage)
 BuildRequires:	jpeg-devel
-#BuildRequires:	automake1.7, automake1.4
 BuildRequires:  pkgconfig(openssl)
-BuildRequires:	imake
 BuildRequires:	pkgconfig(lbxutil)
 BuildRequires:	pkgconfig(xext)
 BuildRequires:	pkgconfig(xrandr)
@@ -139,13 +122,8 @@ Group:		Networking/Remote access
 Nx ssh client
 
 %prep
-%setup -q -c -a 1 -a 2 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9
-%patch0 -p 0
-%patch1 -p 0
-%patch2 -p 0
-%patch3 -p1
-%patch4 -p1
-%patch5 -p0
+%setup -q -n %{srcname}-%{version}
+%apply_patches
 
 cat <<EOF >>nx-X11/config/cf/host.def
 #define UseRpath YES
@@ -167,7 +145,7 @@ export CFLAGS="$CFLAGS -fPIC -DPIC"
 %endif
 export CXXFLAGS="$CFLAGS"
 export RPM_OPT_FLAGS="$CFLAGS"
-export LDFLAGS="%{?__global_ldflags} -Wl,-rpath,%{_pkglibdir}"
+export LDFLAGS="%{?__global_ldflags} -Wl,-rpath,%{_pkglibdir} -ltirpc"
 
 # The commented parts show how the build would proceed step by step.
 # This information is important in case someone wants to split this package
@@ -176,22 +154,7 @@ export LDFLAGS="%{?__global_ldflags} -Wl,-rpath,%{_pkglibdir}"
 # you. It isn't placed by accident in the middle of the commented
 # build instructions, as this is where the X11 libs would be built
 
-# build Compression Library and Proxy
-for i in nxcompshad nxcomp nxproxy; do
-  pushd $i; ./configure; perl -pi -e "s/CXXFLAGS    = -O3/CXXFLAGS = %{optflags} -fPIC/" Makefile && perl -pi -e "s|LDFLAGS     = |LDFLAGS = -fPIC -L/usr/X11R6/%{_lib}|" Makefile && perl -pi -e "s|LIBS        =   |LIBS        =   -lXext |" Makefile && make clean && make %{?_smp_mflags} CCFLAGS="$CFLAGS"; popd
-done
-# build X11 Support Libraries and Agents
-SHLIBGLOBALSFLAGS="$LDFLAGS" LOCAL_LDFLAGS="$LDFLAGS" make %{?_smp_mflags} -C nx-X11 World
-%if 0
-# build Extended Compression Library
-pushd nxcompext
-  ./configure; make %{?_smp_mflags}
-popd
-%endif
-pushd nxssh
-./configure --without-zlib-version-check
-make %{?_smp_mflags} nxssh
-popd
+make CDEBUGFLAGS="$CFLAGS -I/usr/include/tirpc" LOCAL_LDFLAGS="$LDFLAGS" SHLIBGLOBALSFLAGS="$LDFLAGS"
 
 %install
 rm -rf %{buildroot}
@@ -201,36 +164,34 @@ install -d -m 755 %{buildroot}%{_bindir}
 install -d -m 755 %{buildroot}%{_includedir}
 install -d -m 755 %{buildroot}%{_includedir}/nxcompsh
 
-#----------- nxcomp 
-install -m 755 nxcomp/libXcomp.so.* %{buildroot}%{_libdir}
-rm -f %{buildroot}%{_libdir}/libXcomp.so.3
-ln -s libXcomp.so.3.1.0 %{buildroot}%{_libdir}/libXcomp.so.3
-
 #----------- nxX11
-install -m 755 nx-X11/lib/X11/libX11-nx.so.* %{buildroot}%{_libdir}
-install -m 755 nx-X11/lib/Xext/libXext-nx.so.*  %{buildroot}%{_libdir}
-install -m 755 nx-X11/lib/Xrender/libXrender-nx.so.* %{buildroot}%{_libdir}
-install -m 755 nx-X11/programs/Xserver/nxagent %{buildroot}%{_bindir}
-rm -f %{buildroot}%{_libdir}/libX11-nx.so.6
-ln -s libX11.so.6.2 %{buildroot}%{_libdir}/libX11-nx.so.6
-rm -f %{buildroot}%{_libdir}/libXext-nx.so.6
-ln -s libXext.so.6.4 %{buildroot}%{_libdir}/libXext-nx.so.6
-rm -f %{buildroot}%{_libdir}/libXrender-nx.so.1
-ln -s libXrender.so.1.2.2 %{buildroot}%{_libdir}/libXrender-nx.so.1
+install -m 0755 \
+    nx-X11/lib/X11/libNX_X11.so.*.* \
+    nx-X11/lib/Xau/libNX_Xau.so.*.* \
+    nx-X11/lib/Xcomposite/libNX_Xcomposite.so.*.* \
+    nx-X11/lib/Xdamage/libNX_Xdamage.so.*.* \
+    nx-X11/lib/Xdmcp/libNX_Xdmcp.so.*.* \
+    nx-X11/lib/Xext/libNX_Xext.so.*.* \
+    nx-X11/lib/Xfixes/libNX_Xfixes.so.*.* \
+    nx-X11/lib/Xinerama/libNX_Xinerama.so.*.* \
+    nx-X11/lib/Xpm/libNX_Xpm.so.*.* \
+    nx-X11/lib/Xrandr/libNX_Xrandr.so.*.* \
+    nx-X11/lib/Xrender/libNX_Xrender.so.*.* \
+    nx-X11/lib/Xtst/libNX_Xtst.so.*.* \
+    %{buildroot}%{_libdir}
+install -m 0755 nx-X11/programs/Xserver/nxagent \
+    %{buildroot}%{_bindir}
+install -m 0755 nx-X11/programs/nxauth/nxauth \
+    %{buildroot}%{_bindir}
 
 #----------- nxcompext
-install -m 755 nxcompext/libXcompext.so.* %{buildroot}%{_libdir}
-rm -f %{buildroot}%{_libdir}/libXcompext.so.3
-ln -s libXcompext.so.3.1.0 %{buildroot}%{_libdir}/libXcompext.so.3
-install -m 755 nxcompshad/libXcompshad.so.* %{buildroot}%{_libdir}
-rm -f %{buildroot}%{_libdir}/libXcompshad.so.3
-ln -s libXcompshad.so.3.1.0 %{buildroot}%{_libdir}/libXcompshad.so.3
+install -m 0755 nxcomp/libXcomp.so.*.* \
+    nxcompext/libXcompext.so.*.* \
+    nxcompshad/libXcompshad.so.*.* \
+    %{buildroot}%{_libdir}
 
 #----------- nxproxy 
 install -m 755 nxproxy/nxproxy %{buildroot}%{_bindir}
-
-#----------- nxssh
-install -m 755 nxssh/nxssh %{buildroot}%{_bindir}
 
 %files -n nxproxy
 %{_bindir}/nxproxy
@@ -245,15 +206,22 @@ install -m 755 nxssh/nxssh %{buildroot}%{_bindir}
 #---------- nx-x11
 %files -n  %{lib_name_nxx11}
 %doc GUUG-Presentation-NX.pdf
-%{_libdir}/libX11-nx.so.*
-%{_libdir}/libXext-nx.so.*
-%{_libdir}/libXrender-nx.so.*
+%{_libdir}/libNX_X11*.so.*
+%{_libdir}/libNX_Xau*.so.*
+%{_libdir}/libNX_Xcomposite*.so.*
+%{_libdir}/libNX_Xdamage*.so.*
+%{_libdir}/libNX_Xdmcp*.so.*
+%{_libdir}/libNX_Xext*.so.*
+%{_libdir}/libNX_Xfixes*.so.*
+%{_libdir}/libNX_Xinerama*.so.*
+%{_libdir}/libNX_Xpm*.so.*
+%{_libdir}/libNX_Xrandr*.so.*
+%{_libdir}/libNX_Xrender*.so.*
+%{_libdir}/libNX_Xtst*.so.*
+%{_bindir}/nxauth
 
 #-------- lib xcompext
 %files -n  %{lib_name_xcompext}
 %{_libdir}/libXcompext.so.*
 %{_libdir}/libXcompshad.so.*
 
-#-------- nxssh
-%defattr(-,root,root)
-%{_bindir}/nxssh

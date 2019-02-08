@@ -1,11 +1,3 @@
 sources:
-  "nx-X11-3.5.0-2.tar.gz": cf85890dad11cb9edc382d7e540fdc866fe82e04
-  "nx-libs-3.5.0.15-full.tar.gz": 6629027a8682d67141f9d543e68926b0c82575ce
-  "nxagent-3.5.0-7.tar.gz": 85d1ec4e36ed9899ae964fa532b958c4f514b037
-  "nxauth-3.5.0-1.tar.gz": d876bb0e8df7978f3142c92cf804f5b6f486f0c7
-  "nxcomp-3.5.0-2.tar.gz": 4028078d3318c2287b13b1c81f2ce1ccb69273ad
-  "nxcompext-3.5.0-1.tar.gz": 91a26af67e455d68822737934a08c9990674408f
-  "nxcompshad-3.5.0-2.tar.gz": 9866dce14f001934360190d1ff03ee5ee4908cd5
-  "nxproxy-3.5.0-1.tar.gz": b2ca6cc1bfe1cf667f2fcd77b8fe958d1712748c
-  "nxssh-3.5.0-2.tar.gz": 7a2df5e22acfb53120f414760972eac9cc8057c2
-  "nxwin-3.5.0-4.tar.gz": 0b9feeafb9579aff4a13f221ce7b0344ba07d7d5
+  GUUG-Presentation-NX.pdf: fbd6969080b1ba84d4c7d244a496f7bcc7e33c16
+  nx-libs-3.5.0.33-full.tar.gz: 0d7f28d35f2ca1f1044ca811204f6ca39fed7371
