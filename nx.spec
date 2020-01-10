@@ -127,7 +127,7 @@ Nx ssh client
 
 %prep
 %setup -q -n %{srcname}-%{version}
-%apply_patches
+%autopatch -p1
 
 cat <<EOF >>nx-X11/config/cf/host.def
 #define UseRpath YES
