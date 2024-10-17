@@ -19,7 +19,7 @@ Source10:	GUUG-Presentation-NX.pdf
 
 License: 	GPLv2+ and MIT
 Group: 		Networking/Remote access
-URL: 		http://www.nomachine.com/sources.php
+URL: 		https://www.nomachine.com/sources.php
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(fontconfig)
 BuildRequires:	pkgconfig(zlib)
